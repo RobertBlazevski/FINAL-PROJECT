@@ -1,9 +1,9 @@
-let login = document.getElementById("Login");
+let loginBtn = document.getElementById("Login");
 let modalTitleLogin = document.getElementById("exampleModalLabel");
 
 let modalBodyLogin = document.getElementsByClassName("modal-body")[0];
 
-const users = [];
+let users = [];
 
 fetch("https://65d38018522627d50109056a.mockapi.io/api/users")
   .then((response) => {
@@ -14,9 +14,29 @@ fetch("https://65d38018522627d50109056a.mockapi.io/api/users")
     users = data;
   });
 
-login.addEventListener("click", () => {
+loginBtn.addEventListener("click", () => {
   modalTitleLogin.innerHTML = "Login";
   modalBodyLogin.innerHTML = createLoginForm();
+  let submitLoginBtn = document.getElementById("submitBtnLogin");
+
+  submitLoginBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    let inputArray = document.querySelectorAll("input");
+    let emptyField = false;
+    inputArray.forEach((element) => {
+      if (element.value === "") {
+        emptyField = true;
+        return;
+      }
+    });
+    if (emptyField) {
+      let errorAll = document.getElementById("errorAll");
+      errorAll.innerText = "Please fill all of the fields";
+      return;
+    }
+
+    login();
+  });
 });
 
 function createLoginForm() {
@@ -40,4 +60,23 @@ function createLoginForm() {
       </div>
     </form>
     `;
+}
+
+function login() {
+  let emailUser = document.getElementById("email").value;
+  let passwordUser = document.getElementById("password").value;
+  let errorAll = document.getElementById("errorAll");
+
+  let user = users.filter((user) => {
+    return user.email === emailUser;
+  });
+if(!user){
+  errorAll.innerHTML = "Email is not valid";
+  return 
+}
+if(!user.password === passwordUser){
+    errorAll.innerHTML = "Password is not valid";
+    return
+}
+  console.log(user);
 }
