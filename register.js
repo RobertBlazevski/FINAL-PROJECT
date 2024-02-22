@@ -1,6 +1,6 @@
 let register = document.getElementById("register");
-let modalTitleLogin = document.getElementById("exampleModalLabel");
-let modalBodyLogin = document.getElementsByClassName("modal-body")[0];
+let modalTitle = document.getElementById("exampleModalLabel");
+let modalBody = document.getElementsByClassName("modal-body")[0];
 
 register.addEventListener("click", () => {
   modalTitle.innerText = "Register";
