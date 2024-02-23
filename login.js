@@ -1,7 +1,9 @@
 let loginBtn = document.getElementById("Login");
 let modalTitleLogin = document.getElementById("exampleModalLabel");
-
 let modalBodyLogin = document.getElementsByClassName("modal-body")[0];
+let logoutBtn = document.getElementById("Logout");
+let registerBtn = document.getElementById("register");
+const el = document.getElementById("test");
 
 let users = [];
 
@@ -22,6 +24,7 @@ loginBtn.addEventListener("click", () => {
   submitLoginBtn.addEventListener("click", (e) => {
     e.preventDefault();
     let inputArray = document.querySelectorAll("input");
+    let errorAll = document.getElementById("errorAll");
     let emptyField = false;
     inputArray.forEach((element) => {
       if (element.value === "") {
@@ -30,12 +33,11 @@ loginBtn.addEventListener("click", () => {
       }
     });
     if (emptyField) {
-      let errorAll = document.getElementById("errorAll");
       errorAll.innerText = "Please fill all of the fields";
       return;
     }
 
-    login();
+    login(errorAll);
   });
 });
 
@@ -62,21 +64,63 @@ function createLoginForm() {
     `;
 }
 
-function login() {
+function uuidv4() {
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
+    (
+      c ^
+      (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+    ).toString(16)
+  );
+}
+
+function login(errorAll) {
   let emailUser = document.getElementById("email").value;
   let passwordUser = document.getElementById("password").value;
-  let errorAll = document.getElementById("errorAll");
 
   let user = users.filter((user) => {
     return user.email === emailUser;
   });
-if(!user){
-  errorAll.innerHTML = "Email is not valid";
-  return 
+
+  if (!user) {
+    errorAll.innerText = "Email is not valid";
+    return;
+  }
+  if (!user.password === passwordUser) {
+    errorAll.innerText = "Password is not valid";
+    return;
+  }
+
+  let token = uuidv4();
+  localStorage.setItem("token", token);
+  userLoggedIn();
+  simulateClick(el);
 }
-if(!user.password === passwordUser){
-    errorAll.innerHTML = "Password is not valid";
-    return
+
+function userLoggedIn() {
+  loginBtn.style.display = "none";
+  registerBtn.style.display = "none";
+  logoutBtn.style.display = "block";
 }
-  console.log(user);
+
+function isUserLogged() {
+  if (localStorage.getItem("token")) {
+    userLoggedIn();
+  }
+}
+
+isUserLogged();
+
+function logout() {
+  loginBtn.style.display = "block";
+  registerBtn.style.display = "block";
+  logoutBtn.style.display = "none";
+  localStorage.removeItem("token");
+}
+
+function simulateClick(element) {
+  trigger(element, "click");
+
+  function trigger(elem, event) {
+    elem.dispatchEvent(new MouseEvent(event));
+  }
 }
